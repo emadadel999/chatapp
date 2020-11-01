@@ -4,10 +4,7 @@ const HttpError = require("../models/httpError");
 
 const emittedClientMsg = (msg, socket) => {
     console.log(msg);
-    socket.broadcast.emit('onServerMsg', {
-        username: socket.username,
-        message: msg
-    });
+    socket.broadcast.emit('onServerMsg', msg);
 };
 
 const addUser = (socket, username, numUsers) => {

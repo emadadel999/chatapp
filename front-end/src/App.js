@@ -15,7 +15,7 @@ import AuthForm from "./shared/authForm/index";
 import Home from "./pages/Home";
 
 function App() {
-  const { isFetching, isLoggedIn, serverError, username } = useSelector(
+  const { isFetching, isLoggedIn, serverError } = useSelector(
     (state) => state.authReducer
   );
   const dispatch = useDispatch();
@@ -32,7 +32,7 @@ function App() {
     <Router>
       <Switch>
         <PrivateRoute exact path="/" condition={isLoggedIn} redirectRoute="/auth">
-          <Home username={username}/>
+          <Home />
         </PrivateRoute>
         <PrivateRoute exact path="/auth" condition={!isLoggedIn} redirectRoute="/">
           <AuthForm
