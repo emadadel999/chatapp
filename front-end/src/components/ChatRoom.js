@@ -1,18 +1,34 @@
 import React, { useRef, useState } from "react";
+import { useDispatch } from "react-redux";
 import styled from "styled-components";
-import { v4 as uuid } from 'uuid';
+import { v4 as uuid } from "uuid";
+import { newServerMessage } from "../shared/util/redux/actions/actions";
 
-
-const ChatRoom = ({ msgs, sendMsg, currentUser }) => {
+const ChatRoom = ({ currentUser }) => {
+  //const { newMsg } = useSelector((state) => state.wsReducer);
+  const [msgs, setMsgs] = useState([]);
   const [newMsg, setNewMsg] = useState(null);
   const chatInput = useRef();
+  const dispatch = useDispatch();
+
+  // send new message to the server
+  const sendMsg = (newMsg) => {
+    setMsgs([...msgs, newMsg]);
+    dispatch(newServerMessage(newMsg));
+  };
 
   return (
     <ChattingContainer>
       <MsgContainer>
-        {msgs.map((msg) => (
-          <p key={uuid()}>{msg.senderName}: {msg.text}</p>
-        ))}
+        {msgs ? (
+          msgs.map((msg) => (
+            <p key={uuid()}>
+              {msg.senderName}: {msg.text}
+            </p>
+          ))
+        ) : (
+          <p>Loading...</p>
+        )}
       </MsgContainer>
       <TextingContainer>
         <ChatInput

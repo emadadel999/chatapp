@@ -7,16 +7,6 @@ const emittedClientMsg = (msg, socket) => {
     socket.broadcast.emit('onServerMsg', msg);
 };
 
-const addUser = (socket, username, numUsers) => {
-    console.log(username);
-    socket.username = username;
-    socket.broadcast.emit('userEntered', {
-        username,
-        numUsers
-    })
-}
-
 
 
 exports.emittedClientMsg = emittedClientMsg;
-exports.addUser = addUser;

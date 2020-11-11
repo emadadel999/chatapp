@@ -19,7 +19,7 @@ const authReducer = (state = initialState, action) => {
       };
     case RECIEVE_AUTH:
       return {
-        isLoggedIn: action.payload.isAuth,
+        isLoggedIn: action.payload,
         isFetching: false,
         serverError: ''
       };

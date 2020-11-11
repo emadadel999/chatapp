@@ -12,6 +12,7 @@ import App from "./App";
 import * as serviceWorker from "./serviceWorker";
 import rootReducer from "./shared/util/redux/reducers/index";
 import { loadUserData, saveUserData } from "./shared/localStorage";
+import socketMiddleware from "./shared/util/redux/middleware/socketMiddleware";
 
 const loggerMiddleware = createLogger();
 
@@ -20,13 +21,13 @@ const persistentState = loadUserData();
 const store = createStore(
   rootReducer,
   persistentState,
-  applyMiddleware(thunkMiddleware, loggerMiddleware)
+  applyMiddleware(thunkMiddleware, loggerMiddleware, socketMiddleware)
 );
 
 store.subscribe(() => {
   saveUserData({
+    userReducer: store.getState().userReducer,
     authReducer: store.getState().authReducer,
-    userReducer: store.getState().userReducer
   });
 });
 

@@ -1,36 +1,12 @@
 import Axios from "axios";
 
-import { REQUEST_AUTH, RECIEVE_AUTH, FETCH_AUTH_FAILED, RECIEVE_USER_DATA } from "./actionTypes";
 import { BACKEND_SERVER } from "../../../globals";
-
-export const requestAuthData = () => {
-  return {
-    type: REQUEST_AUTH,
-  };
-};
-export const fetchAuthFailed = (error) => {
-  return {
-    type: FETCH_AUTH_FAILED,
-    payload: error,
-  };
-};
-
-export const recieveAuthData = ({ isAuth, username }) => {
-  return {
-    type: RECIEVE_AUTH,
-    payload: {
-      isAuth,
-      username,
-    },
-  };
-};
-
-export const recieveUserData = (currentUser) => {
-  return {
-    type: RECIEVE_USER_DATA,
-    payload: currentUser,
-  };
-};
+import {
+  fetchAuthFailed,
+  recieveAuthData,
+  recieveUserData,
+  requestAuthData,
+} from "./actions";
 
 export const fetchLoginRequest = (authData) => {
   return (dispatch) => {
@@ -41,8 +17,8 @@ export const fetchLoginRequest = (authData) => {
       password: authData.password,
     })
       .then((res) => {
-        dispatch(recieveAuthData({isAuth: res.data.isAuth}));
         dispatch(recieveUserData(res.data.currentUser));
+        dispatch(recieveAuthData(res.data.isAuth));
       })
       .catch((err) => {
         const error = err.response ? err.response.data.message : err.message;
@@ -61,8 +37,8 @@ export const fetchRegisterRequest = (authData) => {
       password: authData.password,
     })
       .then((res) => {
-        dispatch(recieveAuthData({isAuth: res.data.isAuth}));
         dispatch(recieveUserData(res.data.currentUser));
+        dispatch(recieveAuthData(res.data.isAuth));
       })
       .catch((err) => {
         const error = err.response ? err.response.data.message : err.message;
