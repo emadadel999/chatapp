@@ -40,6 +40,8 @@ app.post(
 
 app.get("/api/users", usersController.allUsers);
 
+app.post("/api/userstate", usersController.setState);
+
 // sockect.io connection
 io.on("connection", (socket) => {
   ++numOnlineUsers;
@@ -51,6 +53,7 @@ io.on("connection", (socket) => {
     io.emit("userOnline", {
       userId: socket.userId,
       numOnlineUsers,
+      isOnline: true
     });
   });
 
@@ -62,11 +65,12 @@ io.on("connection", (socket) => {
   // event to fire if a client disconnects from server (refresh or close or connection lost...etc)
   socket.on("disconnect", (reason) => {
     --numOnlineUsers;
-    console.log("user is connected");
+    console.log("user is disconnected");
     console.log(numOnlineUsers, " is the number of online users");
     socket.broadcast.emit("userOffline", {
       userId: socket.userId,
       numOnlineUsers,
+      isOnline: false
     });
   });
 });

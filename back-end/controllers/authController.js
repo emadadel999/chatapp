@@ -18,7 +18,8 @@ const login = (req, res, next) => {
       );
     const currentUser = {
       _id: userExist._id,
-      username: userExist.username
+      username: userExist.username,
+      isOnline: userExist.isOnline
     }
     return res.status(200).json({
       message: "successfully logged in",
@@ -51,7 +52,8 @@ const register = async (req, res, next) => {
     if (err) return next(new HttpError("server error", 500));
     const currentUser = {
       _id: createdUser._id,
-      username: createdUser.username
+      username: createdUser.username,
+      isOnline: userExist.isOnline
     }
     return res.status(201).json({
       message: "successfully registered",

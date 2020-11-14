@@ -2,8 +2,9 @@ import { GET_NEW_MESSAGE, USER_OFFLINE, USER_ONLINE } from "../actions/actionTyp
 
 const initialState = {
   newMsg: null,
-  user: null,
-  updatedNumOfUsers: 0
+  numOfOnlineUsers: 0,
+  userId: "",
+  isOnline: false
 };
 
 const wsReducer = (state = initialState, action) => {
@@ -16,14 +17,16 @@ const wsReducer = (state = initialState, action) => {
     case USER_ONLINE:
       return {
         ...state,
-        user: action.payload.userId,
-        updatedNumOfUsers: action.payload.numOfOnlineUsers
+        numOfOnlineUsers: action.payload.numOfOnlineUsers,
+        userId: action.payload.userId,
+        isOnline: true
       };
     case USER_OFFLINE:
       return {
         ...state,
-        user: action.payload.userId,
-        updatedNumOfUsers: action.payload.numOfOnlineUsers
+        numOfOnlineUsers: action.payload.numOfOnlineUsers,
+        userId: action.payload.userId,
+        isOnline: false
       };
     default:
       return { ...state };

@@ -10,4 +10,13 @@ const allUsers = (req, res, next) => {
   });
 };
 
+const setState = (req, res, next) => {
+  const {userId, isOnline} = req.body;
+  console.log(req.body);
+  User.findOneAndUpdate({_id: userId}, {isOnline},{new: true}, (err, user) => {
+    if (err) return next(new HttpError(`server error, ${err}`, 500));
+    return res.status(200).json(user);
+  })
+}
 exports.allUsers = allUsers;
+exports.setState = setState;
