@@ -8,6 +8,7 @@ const msgController = require("./controllers/msgController");
 const usersController = require("./controllers/usersController");
 const HttpError = require("./models/httpError");
 const { FRONTEND_SERVER } = require("./models/globals");
+const User = require("./models/usersCollection");
 
 const port = process.env.PORT || 5000;
 const app = express();
@@ -67,6 +68,10 @@ io.on("connection", (socket) => {
     --numOnlineUsers;
     console.log("user is disconnected");
     console.log(numOnlineUsers, " is the number of online users");
+
+    User.findOneAndUpdate({_id: socket.userId}, {isOnline: false},{new: true}, (err, user) => {
+      console.log(user);
+    })
     socket.broadcast.emit("userOffline", {
       userId: socket.userId,
       numOnlineUsers,

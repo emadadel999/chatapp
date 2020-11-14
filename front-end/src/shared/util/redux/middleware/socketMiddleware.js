@@ -34,16 +34,17 @@ const socketMiddleware = () => {
   };
   const onUserOffline = (store, { userId, numOnlineUsers, isOnline }) => {
     store.dispatch(userOffline(userId, numOnlineUsers, isOnline));
-    postUserState(`${BACKEND_SERVER}/api/userstate`, userId, false);
+  };
+
+  const onNewMsg = (store, newMsg) => {
+    store.dispatch(getNewMessage(newMsg));
   };
 
   const onDisconnect = (reason) => {
     console.log(reason, "client disconnected.");
   };
 
-  const onNewMsg = (store, newMsg) => {
-    store.dispatch(getNewMessage(newMsg));
-  };
+  
   // the middleware part of this function
   return (store) => (next) => (action) => {
     switch (action.type) {

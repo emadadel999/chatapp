@@ -30,6 +30,7 @@ const Users = ({ currentUser }) => {
           userToUpdate.isOnline = isOnline;
           return [...prevUsers];
         }
+        return prevUsers;
       });
     } else {
       getAllUsers(`${BACKEND_SERVER}/api/users?id=${currentUser._id}`);
