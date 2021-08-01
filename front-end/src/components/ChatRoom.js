@@ -1,29 +1,46 @@
-import React, { useRef, useState } from "react";
-import { useDispatch } from "react-redux";
+import React, { useEffect, useRef, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import styled from "styled-components";
 import { v4 as uuid } from "uuid";
 import { newServerMessage } from "../shared/util/redux/actions/actions";
 
-const ChatRoom = ({ currentUser }) => {
-  //const { newMsg } = useSelector((state) => state.wsReducer);
+const ChatRoom = ({ currentUser, roomId }) => {
+  const { newMsg } = useSelector((state) => state.wsReducer);
   const [msgs, setMsgs] = useState([]);
-  const [newMsg, setNewMsg] = useState(null);
   const chatInput = useRef();
   const dispatch = useDispatch();
 
   // send new message to the server
-  const sendMsg = (newMsg) => {
-    setMsgs([...msgs, newMsg]);
-    dispatch(newServerMessage(newMsg));
+  const sendMsg = (myMsgText) => {
+    const myMsg = {
+      text: myMsgText,
+      senderName: currentUser.username,
+      senderId: currentUser._id,
+      recieverId: "",
+      sentDate: Date.now(),
+      deliveredDate: "",
+      readDate: "",
+    }
+    setMsgs([...msgs, myMsg]);
+    dispatch(newServerMessage(myMsg, roomId));
   };
 
+
+  useEffect(() => {
+    if (newMsg) {
+      setMsgs((prevMsgs) => [...prevMsgs, newMsg]);
+    }
+  }, [newMsg])
+
+
+  
   return (
     <ChattingContainer>
       <MsgContainer>
         {msgs ? (
           msgs.map((msg) => (
             <p key={uuid()}>
-              {msg.senderName}: {msg.text}
+              <b>{msg.senderName}</b>: {msg.text}
             </p>
           ))
         ) : (
@@ -32,25 +49,14 @@ const ChatRoom = ({ currentUser }) => {
       </MsgContainer>
       <TextingContainer>
         <ChatInput
-          onChange={(event) =>
-            setNewMsg({
-              text: event.target.value,
-              senderName: currentUser.username,
-              senderId: currentUser._id,
-              recieverId: "",
-              sentDate: Date.now(),
-              deliveredDate: "",
-              readDate: "",
-            })
-          }
           ref={chatInput}
           placeholder="enter your text here"
         />
         <ChatBtn
           type="submit"
           onClick={() => {
+            sendMsg(chatInput.current.value);
             chatInput.current.value = "";
-            sendMsg(newMsg);
           }}
         >
           Send

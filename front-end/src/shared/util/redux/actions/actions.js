@@ -9,6 +9,8 @@ import {
   USER_ONLINE,
   USER_OFFLINE,
   NEW_SERVER_MESSAGE,
+  JOIN_ROOM,
+  LEAVE_ROOM,
 } from "./actionTypes";
 
 export const requestAuthData = () => {
@@ -50,10 +52,13 @@ export const wsDisconnect = () => {
   };
 };
 
-export const newServerMessage = (msg) => {
+export const newServerMessage = (msg, room) => {
   return {
     type: NEW_SERVER_MESSAGE,
-    payload: msg
+    payload: {
+      msg,
+      room
+    }
   };
 };
 
@@ -80,5 +85,19 @@ export const userOffline = (userId, numOfOnlineUsers) => {
         userId,
         numOfOnlineUsers
     }
+  };
+};
+
+export const joinRoom = (roomId) => {
+  return {
+    type: JOIN_ROOM,
+    payload: roomId
+  };
+};
+
+export const leaveRoom = (roomId) => {
+  return {
+    type: LEAVE_ROOM,
+    payload: roomId
   };
 };

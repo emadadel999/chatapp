@@ -1,84 +1,21 @@
 const express = require("express");
-const { check } = require("express-validator");
-const mongoose = require("mongoose");
+require("dotenv").config();
+require("./api/data/db");
+require("./api/socket-io");
+const router = require("./api/routes");
 const cors = require("cors");
-
-const authController = require("./controllers/authController");
-const msgController = require("./controllers/msgController");
-const usersController = require("./controllers/usersController");
-const HttpError = require("./models/httpError");
-const { FRONTEND_SERVER } = require("./models/globals");
-const User = require("./models/usersCollection");
-
-const port = process.env.PORT || 5000;
 const app = express();
-const http = require("http").createServer(app);
-const io = require("socket.io")(http);
-let numOnlineUsers = 0;
 
+const { HttpError } = require("./api/data/models");
+
+// app.use("/node", express.static(path.join(__dirname, "node_modules")));
+// app.use(express.static(process.env.PUBLIC_FOLDER));
+app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
 app.use(cors());
 
 /* Routes */
-app.post(
-  "/api/login",
-  [
-    check("username").notEmpty().isLength({ max: 15 }),
-    check("password").notEmpty().isLength({ min: 6, max: 10 }),
-  ],
-  authController.login
-);
-
-app.post(
-  "/api/register",
-  [
-    check("username").notEmpty().isLength({ max: 15 }),
-    check("email").notEmpty().isEmail(),
-    check("password").notEmpty().isLength({ min: 6, max: 10 }),
-  ],
-  authController.register
-);
-
-app.get("/api/users", usersController.allUsers);
-
-app.post("/api/userstate", usersController.setState);
-
-// sockect.io connection
-io.on("connection", (socket) => {
-  ++numOnlineUsers;
-  console.log("user is connected");
-
-  socket.on("addUser", (userId) => {
-    console.log(numOnlineUsers, " is the number of online users");
-    socket.userId = userId;
-    io.emit("userOnline", {
-      userId: socket.userId,
-      numOnlineUsers,
-      isOnline: true
-    });
-  });
-
-  // event to fire if a user sends a msg
-  socket.on("emitClientMsg", (data) =>
-    msgController.emittedClientMsg(data, socket)
-  );
-
-  // event to fire if a client disconnects from server (refresh or close or connection lost...etc)
-  socket.on("disconnect", (reason) => {
-    --numOnlineUsers;
-    console.log("user is disconnected");
-    console.log(numOnlineUsers, " is the number of online users");
-
-    User.findOneAndUpdate({_id: socket.userId}, {isOnline: false},{new: true}, (err, user) => {
-      console.log(user);
-    })
-    socket.broadcast.emit("userOffline", {
-      userId: socket.userId,
-      numOnlineUsers,
-      isOnline: false
-    });
-  });
-});
+app.use("/api", router);
 
 // to throw error for undefined routes
 app.use((req, res, next) => {
@@ -95,15 +32,6 @@ app.use((error, req, res, next) => {
   res.json({ message: error.message });
 });
 
-// instantiate db connection
-mongoose.connect(
-  "mongodb://mysuperuser:123456@localhost:27017/myChatAppDb?authSource=admin",
-  { useNewUrlParser: true, useUnifiedTopology: true }
-);
-
-const db = mongoose.connection;
-db.on("error", console.error.bind(console, "connection error:"));
-
-db.once("open", () => {
-  http.listen(port);
+const server = app.listen(process.env.PORT, function () {
+  console.log("Listening to port", server.address().port);
 });

@@ -3,6 +3,8 @@ import io from "socket.io-client";
 import { BACKEND_SERVER } from "../../../globals";
 import { getNewMessage, userOffline, userOnline } from "../actions/actions";
 import {
+  JOIN_ROOM,
+  LEAVE_ROOM,
   NEW_SERVER_MESSAGE,
   WS_CONNECT,
   WS_DISCONNECT,
@@ -12,10 +14,11 @@ import {
 const postUserState = async (url, userId, isOnline) => {
   try {
     const result = await Axios.post(url, { userId, isOnline });
-    console.log(result);
+    return result;
   } catch (err) {
     const error = err.response ? err.response.data.message : err.message;
     console.error(error);
+    return error;
   }
 };
 
@@ -23,7 +26,6 @@ const socketMiddleware = () => {
   let socket = null;
 
   const onConnect = (store) => {
-    console.log("client connected.");
     const { currentUser } = store.getState().userReducer;
     socket.emit("addUser", currentUser._id);
   };
@@ -44,7 +46,6 @@ const socketMiddleware = () => {
     console.log(reason, "client disconnected.");
   };
 
-  
   // the middleware part of this function
   return (store) => (next) => (action) => {
     switch (action.type) {
@@ -70,6 +71,12 @@ const socketMiddleware = () => {
         break;
       case NEW_SERVER_MESSAGE:
         socket.emit("emitClientMsg", action.payload);
+        break;
+      case JOIN_ROOM:
+        socket.emit("roomJoin", action.payload);
+        break;
+      case LEAVE_ROOM:
+        socket.emit("roomLeave", action.payload);
         break;
       default:
         console.log("the next action:", action);

@@ -1,9 +1,10 @@
 const { validationResult } = require("express-validator");
+const { model } = require("mongoose");
 
-const User = require("../models/usersCollection");
-const HttpError = require("../models/httpError");
+const { HttpError } = require("../data/models");
+const User = model("User");
 
-const login = (req, res, next) => {
+module.exports.login = (req, res, next) => {
   const error = validationResult(req);
   if (!error.isEmpty()) {
     return next(new HttpError("wrong input", 422));
@@ -19,8 +20,8 @@ const login = (req, res, next) => {
     const currentUser = {
       _id: userExist._id,
       username: userExist.username,
-      isOnline: userExist.isOnline
-    }
+      isOnline: userExist.isOnline,
+    };
     return res.status(200).json({
       message: "successfully logged in",
       isAuth: true,
@@ -29,7 +30,7 @@ const login = (req, res, next) => {
   });
 };
 
-const register = async (req, res, next) => {
+module.exports.register = async (req, res, next) => {
   const error = validationResult(req);
   if (!error.isEmpty()) {
     return next(new HttpError("wrong input", 422));
@@ -53,8 +54,8 @@ const register = async (req, res, next) => {
     const currentUser = {
       _id: createdUser._id,
       username: createdUser.username,
-      isOnline: userExist.isOnline
-    }
+      isOnline: userExist.isOnline,
+    };
     return res.status(201).json({
       message: "successfully registered",
       isAuth: true,
@@ -62,6 +63,3 @@ const register = async (req, res, next) => {
     });
   });
 };
-
-exports.login = login;
-exports.register = register;

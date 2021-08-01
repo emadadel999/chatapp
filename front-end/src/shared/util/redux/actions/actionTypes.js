@@ -8,3 +8,6 @@ export const NEW_SERVER_MESSAGE = "NEW_SERVER_MESSAGE";
 export const GET_NEW_MESSAGE = "GET_NEW_MESSAGE";
 export const USER_ONLINE = "USER_ONLINE";
 export const USER_OFFLINE = "USER_OFFLINE";
+export const JOIN_ROOM = "JOIN_ROOM";
+export const LEAVE_ROOM = "LEAVE_ROOM";
+
