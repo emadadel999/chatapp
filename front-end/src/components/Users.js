@@ -1,73 +1,67 @@
 import React, { useEffect, useState } from "react";
-import { useSelector } from "react-redux";
 import styled from "styled-components";
 import Axios from "axios";
 import { BACKEND_SERVER } from "../shared/globals";
 
-const Users = ({ currentUser, userChosenHandler }) => {
-  const { numOfOnlineUsers, isOnline, userId } = useSelector(
-    (state) => state.wsReducer
-  );
-  const [users, setUsers] = useState(null);
-  const isUsers = !!users;
-
-  useEffect(() => {
-    if (!isUsers)
-      getAllUsers(`${BACKEND_SERVER}/api/users?id=${currentUser._id}`).then(
-        (allUsers) => {
-          setUsers(allUsers);
-        }
-      );
-    setUsers((prevUsers) => {
-      const userToUpdate = prevUsers
-        ? prevUsers.find((u) => u._id === userId)
-        : null;
-      if (userToUpdate) {
-        userToUpdate.isOnline = isOnline;
-        return [...prevUsers];
-      }
-      return prevUsers;
-    });
-  }, [currentUser, userId, isOnline, isUsers]);
-
-  // Helper Functions
-  //// get all users from db
-  const getAllUsers = async (url) => {
-    try {
-      const result = await Axios.get(url);
-      return result.data;
-    } catch (err) {
+function _usersGetAll(currUserId, setUsers) {
+  Axios.get(`${BACKEND_SERVER}/api/users?id=${currUserId}`)
+    .then(function (res) {
+      setUsers(res.data);
+    })
+    .catch(function (err) {
       const error = err.response ? err.response.data.message : err.message;
       console.error(error);
+    });
+}
+
+const Users = ({ currentUser, userChosenHandler, userStateData }) => {
+  const [users, setUsers] = useState(null);
+  useEffect(() => {
+    if (users) {
+      setUsers((prevUsers) => {
+        const userToUpdate = prevUsers.find(
+          (u) => u._id === userStateData.userId
+        );
+        if (userToUpdate) {
+          userToUpdate.isOnline = userStateData.isOnline;
+          return [...prevUsers];
+        }
+        return prevUsers;
+      });
+    } else {
+      _usersGetAll(currentUser._id, setUsers);
     }
-  };
+  }, [currentUser, userStateData, !!users]);
 
   return (
     <UsersContainer>
-      <StatusHead>Online ({numOfOnlineUsers})</StatusHead>
       {users ? (
-        <List>
-          {users.map((user) => {
-            if (user.isOnline) {
-              return (
-                <ListElement
-                  key={user._id}
-                  onClick={() => userChosenHandler(user._id)}
-                >
-                  {user.username} (online)
-                </ListElement>
-              );
-            }
-            return (
-              <ListElement
-                key={user._id}
-                onClick={() => userChosenHandler(user._id)}
-              >
-                {user.username}
-              </ListElement>
-            );
-          })}
-        </List>
+        <>
+          <StatusHead>Online ({userStateData.numOnline})</StatusHead>
+          <List>
+            {users.map((user) => {
+              if (user.isOnline) {
+                return (
+                  <ListElement
+                    key={user._id}
+                    onClick={() => userChosenHandler(user._id)}
+                  >
+                    {user.username} (online)
+                  </ListElement>
+                );
+              } else {
+                return (
+                  <ListElement
+                    key={user._id}
+                    onClick={() => userChosenHandler(user._id)}
+                  >
+                    {user.username}
+                  </ListElement>
+                );
+              }
+            })}
+          </List>
+        </>
       ) : (
         <p>Loading...</p>
       )}

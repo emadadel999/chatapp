@@ -1,7 +1,4 @@
 import {
-  REQUEST_AUTH,
-  RECIEVE_AUTH,
-  FETCH_AUTH_FAILED,
   RECIEVE_USER_DATA,
   WS_CONNECT,
   WS_DISCONNECT,
@@ -13,36 +10,20 @@ import {
   LEAVE_ROOM,
 } from "./actionTypes";
 
-export const requestAuthData = () => {
-  return {
-    type: REQUEST_AUTH,
-  };
-};
-export const fetchAuthFailed = (error) => {
-  return {
-    type: FETCH_AUTH_FAILED,
-    payload: error,
-  };
-};
-
-export const recieveAuthData = (isAuth) => {
-  return {
-    type: RECIEVE_AUTH,
-    payload: isAuth,
-  };
-};
-
-export const recieveUserData = (currentUser) => {
+export const recieveUserData = (currentUser, isLoggedIn) => {
   return {
     type: RECIEVE_USER_DATA,
-    payload: currentUser,
+    payload: {
+      currentUser,
+      isLoggedIn,
+    },
   };
 };
 
 export const wsConnect = (url) => {
   return {
     type: WS_CONNECT,
-    payload: url
+    payload: url,
   };
 };
 
@@ -57,15 +38,15 @@ export const newServerMessage = (msg, room) => {
     type: NEW_SERVER_MESSAGE,
     payload: {
       msg,
-      room
-    }
+      room,
+    },
   };
 };
 
 export const getNewMessage = (msg) => {
   return {
     type: GET_NEW_MESSAGE,
-    payload: msg
+    payload: msg,
   };
 };
 
@@ -73,31 +54,31 @@ export const userOnline = (userId, numOfOnlineUsers) => {
   return {
     type: USER_ONLINE,
     payload: {
-        userId,
-        numOfOnlineUsers
-    }
+      userId,
+      numOfOnlineUsers,
+    },
   };
 };
 export const userOffline = (userId, numOfOnlineUsers) => {
   return {
     type: USER_OFFLINE,
     payload: {
-        userId,
-        numOfOnlineUsers
-    }
+      userId,
+      numOfOnlineUsers,
+    },
   };
 };
 
 export const joinRoom = (roomId) => {
   return {
     type: JOIN_ROOM,
-    payload: roomId
+    payload: roomId,
   };
 };
 
 export const leaveRoom = (roomId) => {
   return {
     type: LEAVE_ROOM,
-    payload: roomId
+    payload: roomId,
   };
 };

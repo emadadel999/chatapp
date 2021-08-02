@@ -54,7 +54,7 @@ module.exports.register = async (req, res, next) => {
     const currentUser = {
       _id: createdUser._id,
       username: createdUser.username,
-      isOnline: userExist.isOnline,
+      isOnline: createdUser.isOnline,
     };
     return res.status(201).json({
       message: "successfully registered",

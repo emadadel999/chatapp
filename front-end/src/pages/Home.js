@@ -1,26 +1,52 @@
 import React, { useEffect, useState } from "react";
-
+import socketServerConnect from "../shared/socket-io-connection";
 import styled from "styled-components";
 import Users from "../components/Users";
 import ChatRoom from "../components/ChatRoom";
-import { useDispatch, useSelector } from "react-redux";
-import { joinRoom, wsConnect } from "../shared/util/redux/actions/actions";
-import { BACKEND_SERVER } from "../shared/globals";
 import Rooms from "../components/Rooms";
+import { useSelector } from "react-redux";
+import { BACKEND_SERVER } from "../shared/globals";
+import { v4 as uuid } from "uuid";
+import axios from "axios";
+let socket = null;
+
+const _createRoom = function (room) {
+  axios
+    .post("/api/rooms", room)
+    .then(function (res) {})
+    .catch(function (err) {});
+};
 
 const Home = () => {
   const { currentUser } = useSelector((state) => state.userReducer);
-  const dispatch = useDispatch();
   const [roomId, setRoomId] = useState("");
-  const [isUsersMenu, setMenuSwitch] = useState(false);
+  const [toggle, setMenuToggler] = useState(false);
+  const [userStateData, setUserStateData] = useState({
+    userId: "",
+    isOnline: false,
+    numOnline: 0,
+  });
+  const [newMsg, setNewMsg] = useState(null);
 
   useEffect(() => {
-    dispatch(wsConnect(BACKEND_SERVER));
-  }, [dispatch]);
+    socket = socketServerConnect(
+      BACKEND_SERVER,
+      setUserStateData,
+      currentUser,
+      setNewMsg
+    );
+    console.log(socket);
+  }, [BACKEND_SERVER]);
 
   const onUserClicked = (chattedUserId) => {
+    const newRoom = {
+      roomName: "",
+      firstUserId: currentUser._id,
+      secondUserId: chattedUserId,
+    };
+
     setRoomId("room1");
-    dispatch(joinRoom("room1"));
+    socket.emit("roomJoin", "room1");
   };
 
   return (
@@ -28,26 +54,32 @@ const Home = () => {
       <Menu>
         <CurrentUser>{currentUser.username}</CurrentUser>
         <MenuSwitcher>
-          {/* these stupid lines of code needs refactoring */}
-          {isUsersMenu ? (
-            <Switch onClick={() => setMenuSwitch(false)}>Rooms</Switch>
-          ) : (
-            <SelectedSwitch>Rooms</SelectedSwitch>
-          )}
-          {!isUsersMenu ? (
-            <Switch onClick={() => setMenuSwitch(true)}>Users</Switch>
-          ) : (
-            <SelectedSwitch>Users</SelectedSwitch>
-          )}
+          <Switch selected={toggle} onClick={() => setMenuToggler(false)}>
+            Users
+          </Switch>
+          <Switch selected={!toggle} onClick={() => setMenuToggler(true)}>
+            Rooms
+          </Switch>
         </MenuSwitcher>
-        {isUsersMenu ? (
-          <Users currentUser={currentUser} userChosenHandler={onUserClicked} />
-        ) : (
+        {toggle ? (
           <Rooms currentUser={currentUser} userChosenHandler={onUserClicked} />
+        ) : (
+          <Users
+            currentUser={currentUser}
+            userStateData={userStateData}
+            userChosenHandler={onUserClicked}
+          />
         )}
       </Menu>
 
-      {roomId ? <ChatRoom currentUser={currentUser} roomId={roomId} /> : null}
+      {roomId ? (
+        <ChatRoom
+          currentUser={currentUser}
+          roomId={roomId}
+          newMsg={newMsg}
+          socket={socket}
+        />
+      ) : null}
     </Container>
   );
 };
@@ -81,14 +113,8 @@ const MenuSwitcher = styled.div`
 const Switch = styled.div`
   width: 50%;
   text-align: center;
-  background-color: lightgrey;
-  cursor: pointer;
-`;
-
-const SelectedSwitch = styled.div`
-  width: 50%;
-  text-align: center;
-  border-style: solid;
+  background-color: ${(props) => (props.selected ? "lightgrey" : "white")};
+  border-style: ${(props) => (props.selected ? "none" : "solid")};
   cursor: pointer;
 `;
 

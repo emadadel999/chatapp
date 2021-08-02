@@ -1,45 +1,87 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   BrowserRouter as Router,
   Redirect,
   Route,
-  Switch
+  Switch,
 } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
-import {
-  fetchLoginRequest,
-  fetchRegisterRequest,
-} from "./shared/util/redux/actions/actionCreators";
+// import {
+//   fetchLoginRequest,
+//   fetchRegisterRequest,
+// } from "./shared/util/redux/actions/actionCreators";
 
 import AuthForm from "./shared/authForm/index";
 import Home from "./pages/Home";
+import { BACKEND_SERVER } from "./shared/globals";
+import Axios from "axios";
+import { recieveUserData } from "./shared/util/redux/actions/actions";
+// import { recieveUserData } from "./shared/util/redux/actions/actionTypes";
 
 function App() {
-  const { isFetching, isLoggedIn, serverError } = useSelector(
-    (state) => state.authReducer
-  );
+  // const { isFetching, isLoggedIn, serverError } = useSelector(
+  //   (state) => state.authReducer
+  // );
   const dispatch = useDispatch();
+  const [isLoggedIn, setLoggedIn] = useState(false);
+  const [serverError, setServerError] = useState("");
 
-  const onLogin = (values) => {
-    dispatch(fetchLoginRequest(values));
+  const onLogin = ({ username, password }) => {
+    Axios.post(`${BACKEND_SERVER}/api/login`, {
+      username: username,
+      password: password,
+    })
+      .then((res) => {
+        console.log(res);
+        dispatch(recieveUserData(res.data.currentUser, true));
+        setLoggedIn(true);
+      })
+      .catch((err) => {
+        const error = err.response ? err.response.data.message : err.message;
+        console.log(error);
+        setServerError(error);
+      });
   };
 
-  const onRegister = (values) => {
-    dispatch(fetchRegisterRequest(values));
+  const onRegister = ({ username, email, password }) => {
+    return Axios.post(`${BACKEND_SERVER}/api/register`, {
+      username: username,
+      email: email,
+      password: password,
+    })
+      .then((res) => {
+        console.log(res);
+        dispatch(recieveUserData(res.data.currentUser, true));
+        setLoggedIn(true);
+      })
+      .catch((err) => {
+        const error = err.response ? err.response.data.message : err.message;
+        console.log(error);
+        setServerError(error);
+      });
   };
 
   return (
     <Router>
       <Switch>
-        <PrivateRoute exact path="/" condition={isLoggedIn} redirectRoute="/auth">
+        <PrivateRoute
+          exact
+          path="/"
+          condition={isLoggedIn}
+          redirectRoute="/auth"
+        >
           <Home />
         </PrivateRoute>
-        <PrivateRoute exact path="/auth" condition={!isLoggedIn} redirectRoute="/">
+        <PrivateRoute
+          exact
+          path="/auth"
+          condition={!isLoggedIn}
+          redirectRoute="/"
+        >
           <AuthForm
             onSignIn={onLogin}
             onSignUp={onRegister}
             serverError={serverError}
-            loading={isFetching}
           />
         </PrivateRoute>
       </Switch>

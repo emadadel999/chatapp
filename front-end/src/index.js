@@ -21,13 +21,12 @@ const persistentState = loadUserData();
 const store = createStore(
   rootReducer,
   persistentState,
-  applyMiddleware(thunkMiddleware, loggerMiddleware, socketMiddleware)
+  applyMiddleware(thunkMiddleware, loggerMiddleware)
 );
 
 store.subscribe(() => {
   saveUserData({
     userReducer: store.getState().userReducer,
-    authReducer: store.getState().authReducer,
   });
 });
 

@@ -1,14 +1,10 @@
 import React, { useEffect, useRef, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
 import styled from "styled-components";
 import { v4 as uuid } from "uuid";
-import { newServerMessage } from "../shared/util/redux/actions/actions";
 
-const ChatRoom = ({ currentUser, roomId }) => {
-  const { newMsg } = useSelector((state) => state.wsReducer);
+const ChatRoom = ({ currentUser, roomId, newMsg, socket }) => {
   const [msgs, setMsgs] = useState([]);
   const chatInput = useRef();
-  const dispatch = useDispatch();
 
   // send new message to the server
   const sendMsg = (myMsgText) => {
@@ -20,20 +16,17 @@ const ChatRoom = ({ currentUser, roomId }) => {
       sentDate: Date.now(),
       deliveredDate: "",
       readDate: "",
-    }
+    };
     setMsgs([...msgs, myMsg]);
-    dispatch(newServerMessage(myMsg, roomId));
+    socket.emit("emitClientMsg", { msg: myMsg, room: roomId });
   };
-
 
   useEffect(() => {
     if (newMsg) {
       setMsgs((prevMsgs) => [...prevMsgs, newMsg]);
     }
-  }, [newMsg])
+  }, [newMsg]);
 
-
-  
   return (
     <ChattingContainer>
       <MsgContainer>
@@ -48,10 +41,7 @@ const ChatRoom = ({ currentUser, roomId }) => {
         )}
       </MsgContainer>
       <TextingContainer>
-        <ChatInput
-          ref={chatInput}
-          placeholder="enter your text here"
-        />
+        <ChatInput ref={chatInput} placeholder="enter your text here" />
         <ChatBtn
           type="submit"
           onClick={() => {

@@ -1,4 +1,2 @@
-require("./globals");
-require("./httpError");
-require("./messagesCollection");
-require("./usersCollection");
+require("./message.model");
+require("./user.model");

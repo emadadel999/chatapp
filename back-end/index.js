@@ -1,23 +1,21 @@
 const express = require("express");
+const cors = require("cors");
 require("dotenv").config();
 require("./api/data/db");
-require("./api/socket-io");
 const router = require("./api/routes");
-const cors = require("cors");
 const app = express();
+const socketIo_server = require("./api/socket-io/index");
 
-const { HttpError } = require("./api/data/models");
-
-// app.use("/node", express.static(path.join(__dirname, "node_modules")));
-// app.use(express.static(process.env.PUBLIC_FOLDER));
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
 app.use(cors());
 
+const HttpError = require("./api/helpers/httpError");
+
 /* Routes */
 app.use("/api", router);
 
-// to throw error for undefined routes
+//to throw error for undefined routes
 app.use((req, res, next) => {
   const error = new HttpError("Cannot find this route", 404);
   throw error;
@@ -32,6 +30,8 @@ app.use((error, req, res, next) => {
   res.json({ message: error.message });
 });
 
-const server = app.listen(process.env.PORT, function () {
-  console.log("Listening to port", server.address().port);
+const express_server = app.listen(process.env.PORT, function () {
+  console.log("Listening to port", express_server.address().port);
 });
+
+socketIo_server(express_server);

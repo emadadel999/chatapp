@@ -2,6 +2,10 @@ const express = require("express");
 const { check } = require("express-validator");
 const router = express.Router();
 const { login, register } = require("../controllers/authController");
+const {
+  allRoomsForUser,
+  createRoom,
+} = require("../controllers/roomController");
 const { allUsers, setState } = require("../controllers/usersController");
 
 router
@@ -28,5 +32,9 @@ router
 router.route("/users").get(allUsers);
 
 router.route("/userstate").post(setState);
+
+router.route("/rooms").post(createRoom);
+
+router.route("/rooms/:userId").get(allRoomsForUser);
 
 module.exports = router;
