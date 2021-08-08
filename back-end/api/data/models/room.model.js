@@ -11,6 +11,7 @@ const messageSchema = new Schema({
 
 const roomSchema = new Schema({
   roomName: String,
+  roomType: String,
   messages: [messageSchema],
   users: [
     {

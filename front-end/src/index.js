@@ -12,7 +12,6 @@ import App from "./App";
 import * as serviceWorker from "./serviceWorker";
 import rootReducer from "./shared/util/redux/reducers/index";
 import { loadUserData, saveUserData } from "./shared/localStorage";
-import socketMiddleware from "./shared/util/redux/middleware/socketMiddleware";
 
 const loggerMiddleware = createLogger();
 

@@ -6,16 +6,9 @@ import ChatRoom from "../components/ChatRoom";
 import Rooms from "../components/Rooms";
 import { useSelector } from "react-redux";
 import { BACKEND_SERVER } from "../shared/globals";
-import { v4 as uuid } from "uuid";
-import axios from "axios";
-let socket = null;
+import { createRoom } from "../shared/util/api-calls/room";
 
-const _createRoom = function (room) {
-  axios
-    .post("/api/rooms", room)
-    .then(function (res) {})
-    .catch(function (err) {});
-};
+let socket = null;
 
 const Home = () => {
   const { currentUser } = useSelector((state) => state.userReducer);
@@ -35,18 +28,30 @@ const Home = () => {
       currentUser,
       setNewMsg
     );
-    console.log(socket);
-  }, [BACKEND_SERVER]);
+  }, [currentUser]);
 
   const onUserClicked = (chattedUserId) => {
     const newRoom = {
-      roomName: "",
-      firstUserId: currentUser._id,
-      secondUserId: chattedUserId,
+      roomName: `${currentUser.username} room`,
+      users: [currentUser._id, chattedUserId],
+      roomType: "single",
+      currUserId: currentUser._id,
+      chattedUserId,
     };
+    createRoom(newRoom)
+      .then((res) => {
+        console.log("got Room", res);
+        setRoomId(res.data._id);
+        socket.emit("roomJoin", res.data._id);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
 
-    setRoomId("room1");
-    socket.emit("roomJoin", "room1");
+  const onRoomClicked = (roomId) => {
+    setRoomId(roomId);
+    socket.emit("roomJoin", roomId);
   };
 
   return (
@@ -62,7 +67,7 @@ const Home = () => {
           </Switch>
         </MenuSwitcher>
         {toggle ? (
-          <Rooms currentUser={currentUser} userChosenHandler={onUserClicked} />
+          <Rooms currentUser={currentUser} roomChosenHandler={onRoomClicked} />
         ) : (
           <Users
             currentUser={currentUser}

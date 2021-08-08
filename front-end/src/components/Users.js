@@ -31,7 +31,7 @@ const Users = ({ currentUser, userChosenHandler, userStateData }) => {
     } else {
       _usersGetAll(currentUser._id, setUsers);
     }
-  }, [currentUser, userStateData, !!users]);
+  }, [currentUser, userStateData, users]);
 
   return (
     <UsersContainer>

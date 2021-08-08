@@ -1,27 +1,63 @@
 import React, { useEffect, useState } from "react";
-import { useSelector } from "react-redux";
 import styled from "styled-components";
 import Axios from "axios";
 import { BACKEND_SERVER } from "../shared/globals";
 
-const Rooms = () => {
+function _roomsGetAll(currUserId, setRooms) {
+  return Axios.get(`${BACKEND_SERVER}/api/rooms/${currUserId}`)
+    .then(function (res) {
+      setRooms(res.data);
+    })
+    .catch(function (err) {
+      const error = err.response ? err.response.data.message : err.message;
+      console.error(error);
+    });
+}
+
+const Rooms = ({ currentUser, roomChosenHandler }) => {
   const [rooms, setRooms] = useState(null);
 
+  useEffect(() => {
+    if (!rooms) {
+      _roomsGetAll(currentUser._id, setRooms);
+    }
+  }, [currentUser, rooms]);
   return (
     <RoomsContainer>
-      {rooms ? <List></List> : <Loading>Loading...</Loading>}
+      {rooms ? (
+        <List>
+          {rooms.map((room) => {
+            return (
+              <ListElement
+                key={room._id}
+                onClick={() => roomChosenHandler(room._id)}
+              >
+                {room.roomName}
+              </ListElement>
+            );
+          })}
+        </List>
+      ) : (
+        <Loading>Loading...</Loading>
+      )}
     </RoomsContainer>
   );
 };
 
 const RoomsContainer = styled.div`
   height: 70%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
 `;
 
-const List = styled.ul``;
+const List = styled.div`
+  display: flex;
+  flex-direction: column;
+`;
+
+const ListElement = styled.button`
+  cursor: pointer;
+  height: 50px;
+  font-size: 20px;
+`;
 
 const Loading = styled.div`
   text-align: center;

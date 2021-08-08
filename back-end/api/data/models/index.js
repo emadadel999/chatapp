@@ -1,2 +1,2 @@
-require("./message.model");
+require("./room.model");
 require("./user.model");
