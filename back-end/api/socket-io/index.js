@@ -4,7 +4,7 @@ const { Server } = require("socket.io");
 const User = model("User");
 
 const socketIo_server = function (server) {
-  let numOnline = 0;
+  let numOnline = -1;
   const io = new Server(server, {
     allowEIO3: true,
     cors: {
@@ -19,8 +19,8 @@ const socketIo_server = function (server) {
 
     socket.on("addUser", (userId) => onAddUser(io, userId, socket, numOnline));
 
-    socket.on("roomJoin", (roomName) =>
-      onRoomJoin(io, roomName, socket, numOnline)
+    socket.on("roomJoin", (roomId) =>
+      onRoomJoin(io, roomId, socket, numOnline)
     );
 
     // event to fire if a user sends a msg
@@ -73,12 +73,11 @@ function onUserDisconnect(io, reason, socket, numOnline) {
   });
 }
 
-function onRoomJoin(io, roomName, socket, numOnline) {
-  socket.join(roomName);
+function onRoomJoin(io, roomId, socket, numOnline) {
+  socket.join(roomId);
 }
-function onRecieveMsg(io, { msg, room }, socket, numOnline) {
-  console.log(room);
-  socket.to(room).emit("onServerMsg", msg);
+function onRecieveMsg(io, { msg, roomId }, socket, numOnline) {
+  socket.to(roomId).emit("onServerMsg", { msg, roomId });
 }
 
 module.exports = socketIo_server;

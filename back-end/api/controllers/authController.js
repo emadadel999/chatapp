@@ -23,7 +23,6 @@ module.exports.login = (req, res, next) => {
       isOnline: userExist.isOnline,
     };
     return res.status(200).json({
-      message: "successfully logged in",
       isAuth: true,
       currentUser,
     });
@@ -57,7 +56,6 @@ module.exports.register = async (req, res, next) => {
       isOnline: createdUser.isOnline,
     };
     return res.status(201).json({
-      message: "successfully registered",
       isAuth: true,
       currentUser,
     });

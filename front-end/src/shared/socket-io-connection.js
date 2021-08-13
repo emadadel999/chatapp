@@ -2,9 +2,10 @@ import io from "socket.io-client";
 
 const socketServerConnect = function (
   serverUrl,
-  setUserStateData,
+  setUsers,
   currentUser,
-  setNewMsg
+  setRooms,
+  setCurrentRoom
 ) {
   const socket = io(serverUrl, {
     withCredentials: true,
@@ -14,12 +15,13 @@ const socketServerConnect = function (
 
   socket.on("disconnect", onDisconnect);
 
-  socket.on("onServerMsg", (newMsg) => onServerMsg(newMsg, setNewMsg));
+  socket.on("onServerMsg", (newMsg) =>
+    onServerMsg(newMsg, setRooms, setCurrentRoom)
+  );
 
-  socket.on("userOnline", (data) => onUserOnline(data, setUserStateData));
-  socket.on("userOffline", (data) => onUserOffline(data, setUserStateData));
+  socket.on("userOnline", (data) => onUserOnline(data, setUsers));
+  socket.on("userOffline", (data) => onUserOffline(data, setUsers));
 
-  console.log(socket);
   return socket;
 };
 
@@ -32,25 +34,45 @@ const onDisconnect = (reason) => {
   console.log(reason, "client disconnected.");
 };
 
-const onUserOnline = (data, setUserStateData) => {
-  setUserStateData({
-    userId: data.userId,
-    isOnline: data.isOnline,
-    numOnline: data.numOnline,
+const onUserOnline = (data, setUsers) => {
+  setUsers((prevUsers) => {
+    const userToUpdate = prevUsers.find((u) => u._id === data.userId);
+    if (userToUpdate) {
+      userToUpdate.isOnline = data.isOnline;
+      console.log("userToUpdateState", userToUpdate);
+      return [...prevUsers];
+    }
+    return prevUsers;
   });
   // postUserState(`${BACKEND_SERVER}/api/userstate`, userId, true);
 };
-const onUserOffline = (data, setUserStateData) => {
-  console.log("signing out user data", data);
-  setUserStateData({
-    userId: data.userId,
-    isOnline: data.isOnline,
-    numOnline: data.numOnline,
+const onUserOffline = (data, setUsers) => {
+  console.log("user signed out", data);
+  setUsers((prevUsers) => {
+    const userToUpdate = prevUsers.find((u) => u._id === data.userId);
+    if (userToUpdate) {
+      userToUpdate.isOnline = data.isOnline;
+      console.log("userToUpdateState", userToUpdate);
+      return [...prevUsers];
+    }
+    return prevUsers;
   });
 };
 
-const onServerMsg = (newMsg, setNewMsg) => {
-  setNewMsg(newMsg);
+const onServerMsg = ({ msg, roomId }, setRooms, setCurrentRoom) => {
+  setRooms((prevRooms) => {
+    const room = prevRooms.find((r) => r._id === roomId);
+    if (room) {
+      room.messages.push(msg);
+    }
+    return { ...prevRooms };
+  });
+  setCurrentRoom((prevRoom) => {
+    if (prevRoom._id === roomId) {
+      prevRoom.messages.push(msg);
+    }
+    return { ...prevRoom };
+  });
 };
 
 export default socketServerConnect;

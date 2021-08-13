@@ -5,6 +5,8 @@ const { login, register } = require("../controllers/authController");
 const {
   allRoomsForUser,
   createRoom,
+  updateRoom,
+  addNewRoomMsg,
 } = require("../controllers/roomController");
 const { allUsers, setState } = require("../controllers/usersController");
 
@@ -34,6 +36,10 @@ router.route("/users").get(allUsers);
 router.route("/userstate").post(setState);
 
 router.route("/rooms").post(createRoom);
+
+router.route("/rooms/:roomId").put(updateRoom);
+
+router.route("/rooms/:roomId/newmsg").post(addNewRoomMsg);
 
 router.route("/rooms/:userId").get(allRoomsForUser);
 

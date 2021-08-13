@@ -5,61 +5,12 @@ import {
   Route,
   Switch,
 } from "react-router-dom";
-import { useDispatch } from "react-redux";
-// import {
-//   fetchLoginRequest,
-//   fetchRegisterRequest,
-// } from "./shared/util/redux/actions/actionCreators";
-
-import AuthForm from "./shared/authForm/index";
-import Home from "./pages/Home";
-import { BACKEND_SERVER } from "./shared/globals";
-import Axios from "axios";
-import { recieveUserData } from "./shared/util/redux/actions/actions";
-// import { recieveUserData } from "./shared/util/redux/actions/actionTypes";
+import Authenticate from "./pages/Authenticate/Authenticate";
+import Home from "./pages/Home/Home";
 
 function App() {
-  // const { isFetching, isLoggedIn, serverError } = useSelector(
-  //   (state) => state.authReducer
-  // );
-  const dispatch = useDispatch();
   const [isLoggedIn, setLoggedIn] = useState(false);
-  const [serverError, setServerError] = useState("");
-
-  const onLogin = ({ username, password }) => {
-    Axios.post(`${BACKEND_SERVER}/api/login`, {
-      username: username,
-      password: password,
-    })
-      .then((res) => {
-        console.log(res);
-        dispatch(recieveUserData(res.data.currentUser, true));
-        setLoggedIn(true);
-      })
-      .catch((err) => {
-        const error = err.response ? err.response.data.message : err.message;
-        console.log(error);
-        setServerError(error);
-      });
-  };
-
-  const onRegister = ({ username, email, password }) => {
-    return Axios.post(`${BACKEND_SERVER}/api/register`, {
-      username: username,
-      email: email,
-      password: password,
-    })
-      .then((res) => {
-        console.log(res);
-        dispatch(recieveUserData(res.data.currentUser, true));
-        setLoggedIn(true);
-      })
-      .catch((err) => {
-        const error = err.response ? err.response.data.message : err.message;
-        console.log(error);
-        setServerError(error);
-      });
-  };
+  const [currentUser, setCurrentUser] = useState(null);
 
   return (
     <Router>
@@ -70,7 +21,7 @@ function App() {
           condition={isLoggedIn}
           redirectRoute="/auth"
         >
-          <Home />
+          <Home currentUser={currentUser} />
         </PrivateRoute>
         <PrivateRoute
           exact
@@ -78,10 +29,9 @@ function App() {
           condition={!isLoggedIn}
           redirectRoute="/"
         >
-          <AuthForm
-            onSignIn={onLogin}
-            onSignUp={onRegister}
-            serverError={serverError}
+          <Authenticate
+            setLoggedIn={setLoggedIn}
+            setCurrentUser={setCurrentUser}
           />
         </PrivateRoute>
       </Switch>
