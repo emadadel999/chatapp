@@ -19,16 +19,13 @@ const socketIo_server = function (server) {
 
     socket.on("addUser", (userId) => onAddUser(io, userId, socket, numOnline));
 
-    socket.on("roomJoin", (roomId) =>
-      onRoomJoin(io, roomId, socket, numOnline)
-    );
+    socket.on("roomJoin", (roomId) => onRoomJoin(roomId, socket));
 
-    // event to fire if a user sends a msg
+    socket.on("roomLeave", (roomId) => onRoomLeave(roomId, socket));
+
     socket.on("emitClientMsg", (data) =>
       onRecieveMsg(io, data, socket, numOnline)
     );
-
-    // event to fire if a client disconnects from server (refresh or close or connection lost...etc)
     socket.on("disconnect", (reason) => {
       --numOnline;
       onUserDisconnect(io, reason, socket, numOnline);
@@ -47,8 +44,7 @@ function onAddUser(io, userId, socket, numOnline) {
       console.log(user);
     }
   );
-  // emit user online event
-  io.emit("userOnline", {
+  socket.broadcast.emit("userOnline", {
     userId,
     numOnline,
     isOnline: true,
@@ -73,8 +69,13 @@ function onUserDisconnect(io, reason, socket, numOnline) {
   });
 }
 
-function onRoomJoin(io, roomId, socket, numOnline) {
+function onRoomJoin(roomId, socket) {
+  console.log("joined room");
   socket.join(roomId);
+}
+function onRoomLeave(roomId, socket) {
+  console.log("left room");
+  socket.leave(roomId);
 }
 function onRecieveMsg(io, { msg, roomId }, socket, numOnline) {
   socket.to(roomId).emit("onServerMsg", { msg, roomId });

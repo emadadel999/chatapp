@@ -10,10 +10,12 @@
   "author": "Emad Adel",
   "license": "ISC",
   "dependencies": {
+    "bcrypt": "^5.0.1",
     "cors": "^2.8.5",
     "dotenv": "^10.0.0",
     "express": "^4.17.1",
     "express-validator": "^6.5.0",
+    "jsonwebtoken": "^8.5.1",
     "mongoose": "^5.13.5",
     "socket.io": "^4.1.3"
   },

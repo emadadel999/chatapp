@@ -1,5 +1,5 @@
 const { model } = require("mongoose");
-const { HttpError } = require("../data/models");
+const HttpError = require("../helpers/httpError");
 const User = model("User");
 
 module.exports.allUsers = (req, res, next) => {

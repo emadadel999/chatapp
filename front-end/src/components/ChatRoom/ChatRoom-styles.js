@@ -15,6 +15,16 @@ export const MsgContainer = styled.div`
   padding: 20px;
 `;
 
+export const CloseContainer = styled.div`
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  padding-right: 10px;
+`;
+export const CloseBtn = styled.button`
+  cursor: pointer;
+`;
+
 export const TextingContainer = styled.div`
   height: 10%;
   width: 100%;

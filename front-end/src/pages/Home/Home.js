@@ -6,6 +6,8 @@ import {
   CurrentUser,
   MenuSwitcher,
   Switch,
+  CurrentUserContainer,
+  SignOutBtn,
 } from "./Home-styles";
 import Users from "../../components/Users/Users";
 import ChatRoom from "../../components/ChatRoom/ChatRoom";
@@ -19,10 +21,10 @@ import {
 import { usersGetAll } from "../../shared/util/api-calls/userApi";
 let socket;
 
-const Home = ({ currentUser }) => {
+const Home = ({ currentUser, signOutHandler }) => {
   const [users, setUsers] = useState(null);
   const [rooms, setRooms] = useState(null);
-  const [currentRoom, setCurrentRoom] = useState("");
+  const [currentRoom, setCurrentRoom] = useState(null);
   const [toggle, setMenuToggler] = useState(false);
 
   useEffect(() => {
@@ -59,6 +61,11 @@ const Home = ({ currentUser }) => {
     socket.emit("roomJoin", currentRoom._id);
   };
 
+  const ChatRoomClosedHandler = (currentRoomId) => {
+    setCurrentRoom(null);
+    socket.emit("roomLeave", currentRoomId);
+  };
+
   const msgSentHandler = (msgText) => {
     const newMsg = {
       text: msgText,
@@ -79,7 +86,13 @@ const Home = ({ currentUser }) => {
   return (
     <Container>
       <Menu>
-        <CurrentUser>{currentUser.username}</CurrentUser>
+        <CurrentUserContainer>
+          <CurrentUser>{currentUser.username}</CurrentUser>
+          <SignOutBtn onClick={() => signOutHandler(socket)}>
+            Sign out
+          </SignOutBtn>
+        </CurrentUserContainer>
+
         <MenuSwitcher>
           <Switch selected={toggle} onClick={() => setMenuToggler(false)}>
             Users
@@ -104,7 +117,11 @@ const Home = ({ currentUser }) => {
       </Menu>
 
       {currentRoom ? (
-        <ChatRoom room={currentRoom} onSendMsgClicked={msgSentHandler} />
+        <ChatRoom
+          room={currentRoom}
+          onSendMsgClicked={msgSentHandler}
+          onClose={ChatRoomClosedHandler}
+        />
       ) : null}
     </Container>
   );

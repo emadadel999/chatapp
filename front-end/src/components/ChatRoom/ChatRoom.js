@@ -3,13 +3,15 @@ import {
   ChatBtn,
   ChatInput,
   ChattingContainer,
+  CloseBtn,
+  CloseContainer,
   MsgContainer,
   TextingContainer,
 } from "./ChatRoom-styles";
 
 import { v4 as uuid } from "uuid";
 
-const ChatRoom = ({ room, onSendMsgClicked }) => {
+const ChatRoom = ({ room, onSendMsgClicked, onClose }) => {
   const chatInput = useRef();
   let msgs = null;
   if (room.messages && room.messages.length > 0) {
@@ -19,6 +21,9 @@ const ChatRoom = ({ room, onSendMsgClicked }) => {
   return (
     <ChattingContainer>
       <MsgContainer>
+        <CloseContainer>
+          <CloseBtn onClick={() => onClose(room._id)}>X</CloseBtn>
+        </CloseContainer>
         {msgs ? (
           msgs.map((msg) => (
             <p key={uuid()}>

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   BrowserRouter as Router,
   Redirect,
@@ -7,10 +7,26 @@ import {
 } from "react-router-dom";
 import Authenticate from "./pages/Authenticate/Authenticate";
 import Home from "./pages/Home/Home";
+import { loadUserData, removeUserData } from "./shared/localStorage";
 
 function App() {
   const [isLoggedIn, setLoggedIn] = useState(false);
-  const [currentUser, setCurrentUser] = useState(null);
+  const [currentUser, setCurrentUser] = useState({});
+  console.log("isLoggedIn", isLoggedIn);
+  useEffect(() => {
+    if (loadUserData()) {
+      const data = loadUserData();
+      setLoggedIn(true);
+      setCurrentUser(data);
+    }
+  }, []);
+
+  const onSignOut = (socket) => {
+    removeUserData();
+    setLoggedIn(false);
+    setCurrentUser({});
+    socket.disconnect();
+  };
 
   return (
     <Router>
@@ -21,7 +37,7 @@ function App() {
           condition={isLoggedIn}
           redirectRoute="/auth"
         >
-          <Home currentUser={currentUser} />
+          <Home signOutHandler={onSignOut} currentUser={currentUser} />
         </PrivateRoute>
         <PrivateRoute
           exact

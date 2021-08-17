@@ -1,5 +1,6 @@
 const { validationResult } = require("express-validator");
 const { model } = require("mongoose");
+const jwt = require("jsonwebtoken");
 
 const HttpError = require("../helpers/httpError");
 const User = model("User");
@@ -20,11 +21,10 @@ module.exports.login = (req, res, next) => {
     const currentUser = {
       _id: userExist._id,
       username: userExist.username,
-      isOnline: userExist.isOnline,
     };
+    const token = jwt.sign(currentUser, process.env.PASS_PHRASE);
     return res.status(200).json({
-      isAuth: true,
-      currentUser,
+      token,
     });
   });
 };
@@ -53,11 +53,10 @@ module.exports.register = async (req, res, next) => {
     const currentUser = {
       _id: createdUser._id,
       username: createdUser.username,
-      isOnline: createdUser.isOnline,
     };
+    const token = jwt.sign(currentUser, process.env.PASS_PHRASE);
     return res.status(201).json({
-      isAuth: true,
-      currentUser,
+      token,
     });
   });
 };

@@ -44,7 +44,6 @@ const onUserOnline = (data, setUsers) => {
     }
     return prevUsers;
   });
-  // postUserState(`${BACKEND_SERVER}/api/userstate`, userId, true);
 };
 const onUserOffline = (data, setUsers) => {
   console.log("user signed out", data);
