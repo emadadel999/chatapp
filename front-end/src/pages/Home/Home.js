@@ -17,8 +17,8 @@ import {
   addMsgToRoom,
   getOrCreateRoom,
   roomsGetAll,
-} from "../../shared/util/api-calls/roomApi";
-import { usersGetAll } from "../../shared/util/api-calls/userApi";
+} from "../../shared/api-calls/roomApi";
+import { usersGetAll } from "../../shared/api-calls/userApi";
 let socket;
 
 const Home = ({ currentUser, signOutHandler }) => {

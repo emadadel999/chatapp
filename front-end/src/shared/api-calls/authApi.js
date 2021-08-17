@@ -1,5 +1,5 @@
 const { default: axios } = require("axios");
-const { BACKEND_SERVER } = require("../../globals");
+const { BACKEND_SERVER } = require("../globals");
 
 module.exports.login = function (username, password) {
   return axios
