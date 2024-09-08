@@ -1,0 +1,34 @@
+.status-head {
+  text-align: center;
+  font-size: 25px;
+}
+
+.list-users__list {
+  display: flex;
+  flex-direction: column;
+  padding: $home-menu-spacing 0;
+  list-style: none;
+}
+
+.list-user {
+  cursor: pointer;
+  height: 50px;
+  border: 0;
+  background-color: $user-list-bg-color;
+
+  &:hover {
+    background-color: $user-list-bg-hover-color;
+  }
+}
+
+.list-user__btn {
+  cursor: pointer;
+  width: 100%;
+  height: 100%;
+  border: 0;
+  background-color: inherit;
+  font-size: 20px;
+  text-align: center;
+}
+
+.list-users__loading {}

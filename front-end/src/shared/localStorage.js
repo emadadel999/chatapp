@@ -2,9 +2,7 @@ import { decodeToken } from "react-jwt";
 
 export const loadUserData = () => {
   try {
-    const decoded = decodeToken(localStorage.getItem("userData"));
-    if (!decoded) return undefined;
-    return decoded;
+    return decodeToken(localStorage.getItem("userData") || '');
   } catch (error) {
     console.error(error);
   }
