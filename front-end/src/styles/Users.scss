@@ -6,7 +6,7 @@
 .list-users__list {
   display: flex;
   flex-direction: column;
-  padding: $home-menu-spacing 0;
+  padding: calc($home-menu-spacing / 2) 0;
   list-style: none;
 }
 
@@ -15,6 +15,7 @@
   height: 50px;
   border: 0;
   background-color: $user-list-bg-color;
+  margin: calc($home-menu-spacing / 2) 0;
 
   &:hover {
     background-color: $user-list-bg-hover-color;

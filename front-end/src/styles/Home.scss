@@ -27,6 +27,7 @@
 
 .current-user {
   margin: 0;
+  margin-right: $home-menu-spacing;
 }
 
 .signout__btn {
@@ -34,8 +35,9 @@
   color: white;
   cursor: pointer;
   border: 0;
-  padding: 10px;
   border-radius: 5px;
+  display: flex;
+  padding: 3px 1px;
 
   &:hover {
     background-color: rgb(201, 45, 45);

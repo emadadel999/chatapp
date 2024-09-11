@@ -26,6 +26,12 @@ function App() {
     removeUserData();
     setLoggedIn(false);
     setCurrentUser(undefined);
+    if (dispatch) {
+      dispatch({
+        type: 'setRoom',
+        room: undefined
+      })      
+    }
     socket.disconnect();
   };
 

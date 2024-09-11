@@ -112,7 +112,9 @@ const Home = ({ currentUser, signout }: HomeProps) => {
       <menu className="home__menu">
         <div className="current-user__container">
           <h1 className="current-user">{currentUser.username}</h1>
-          <button className="signout__btn" onClick={() => signout(socket)}>Sign out</button>
+          <button className="signout__btn" onClick={() => signout(socket)}>
+            <img src="/images/signout.svg" alt="sign out icon"/>
+          </button>
         </div>
 
         <Users
@@ -124,6 +126,7 @@ const Home = ({ currentUser, signout }: HomeProps) => {
       <ChatRoom
         onSendMsgClicked={sendMsg}
         onClose={closeRoom}
+        currentUser={currentUser}
       />
 
     </div>

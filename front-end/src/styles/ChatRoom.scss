@@ -21,12 +21,14 @@
 }
 
 .chat-room__close-btn {
+  display: flex;
   background-color: rgb(245, 54, 54);
   color: white;
   cursor: pointer;
   border: 0;
   margin: 10px;
   border-radius: 5px;
+  padding: 0;
 
   &:hover {
     background-color: rgb(201, 45, 45);
@@ -34,36 +36,74 @@
 }
 
 .msgs__container {
-  padding: $home-menu-spacing;
+  padding: 0 calc($home-menu-spacing * 1.5);
   overflow: auto;
   height: 80vh;
 }
 
+.room-msg__container {
+  margin: calc($home-menu-spacing * 1.5) 0;
+  display: flex;
+  color: rgb(149, 20, 127);
+
+  &.--sender {
+    color: rgb(76, 86, 236);
+    text-align: right;
+    justify-content: flex-end;
+
+    .room-msg__sender {
+      order: 2;
+      margin-right: 0;
+      margin-left: $home-menu-spacing;
+    }
+  }
+}
+
+.room-msg__sender {
+  font-weight: 900;
+  margin-right: $home-menu-spacing;
+}
+
+.room-msg__msg {
+  color: black;
+}
+
 .texting__container {
-  position: absolute;
-  bottom: 0;
+  position: relative;
   display: flex;
   flex-direction: row;
   justify-content: center;
   align-items: center;
   overflow: auto;
-  border: 0;
-  border-bottom-right-radius: $home-border-radius;
-  border-bottom-left-radius: $home-border-radius;
-  height: 11vh;
-  width: 100%;
+  border: $home-border solid $home-border-color;
+  border-radius: $home-border-radius;
+  margin: $home-menu-spacing;
 }
 
 .chat__input {
-  width: 80%;
+  width: 100%;
   height: 100%;
+  position: relative;
   padding: 20px;
   font-size: large;
+  border: 0;
 }
 
 .chat__btn {
-  width: 20%;
-  height: 100%;
+  width: 100px;
   font-size: large;
   cursor: pointer;
+  border: 0;
+  border-radius: calc($home-border-radius * 2);
+  padding: calc($home-menu-spacing / 2);
+  position: absolute;
+  right: calc($home-menu-spacing / 1.5);
+  bottom: calc($home-menu-spacing / 1.5);
+  top: calc($home-menu-spacing / 1.5);
+  background-color: #3965cf;
+  color: #fff;
+
+  &:hover {
+    background-color: #154cce;
+  }
 }
